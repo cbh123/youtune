@@ -8,6 +8,7 @@ import numpy as np
 import platform
 import subprocess
 import zipfile
+import webbrowser
 
 
 def download_youtube_video(url, save_path=''):
@@ -106,7 +107,7 @@ def user_confirmation(path):
     """
     Prompt the user to check the images before proceeding.
     """
-    confirmation = input("Press any key to open finder to check the images.")
+    confirmation = input("Press Enter to open finder to check the images.")
     open_file_explorer(path)  # This will open the file explorer so you can check the images
 
     confirmation = input("Have you checked the images and do you want to proceed with posting a training? (y/n): ")
@@ -117,8 +118,17 @@ def user_model():
     """
     Prompt the user to input the SDXL fine tune model name
     """
-    model_name = input("Please input the model name (owner/model_name)")
-    return model_name
+    does_model_exist = input("Have you already created the model on Replicate? (y/n): ")
+
+    if does_model_exist.lower() == "y":
+        model_name = input("Please input the model name (owner/model_name): ")
+        return model_name
+    else:
+        name = input("What do you want to call the model? Pick a short and memorable name. Use lowercase characters and dashes. (eg: sdxl-barbie): ")
+        webbrowser.open(f"https://replicate.com/create?name={name}")
+        input("Once you have created the model (click Create on the webpage I just opened), press Enter to continue.")
+        owner = input("What is your Replicate username? ")
+        return f"{owner}/{name}"
 
 
 def zip_directory(folder_path, zip_path):
