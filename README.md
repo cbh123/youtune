@@ -1,4 +1,5 @@
 # YouTune
+![DALL·E 2023-10-26 19 39 10 - Photo of a sophisticated logo for 'YouTune'  The design emphasizes the theme of tuning videos  It incorporates a stylized film reel that intertwines w](https://github.com/cbh123/youtune/assets/14149230/808411aa-cecc-4735-a2dd-18344317601a)
 
 [YouTune Video Walkthrough](https://www.loom.com/share/193fa040b8074f44bb5ddabd4dd42b01?sid=4b09aa1b-5cd6-4e4f-a538-d3d62cb1bdc0)
 
