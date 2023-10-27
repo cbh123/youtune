@@ -9,6 +9,7 @@ import platform
 import subprocess
 import zipfile
 import webbrowser
+import os
 
 
 def download_youtube_video(url, save_path=''):
@@ -169,11 +170,36 @@ def create_training(model, save_dir):
         print(f"An error occurred: {str(e)}")
 
 
+def is_replicate_api_token_set():
+    return 'REPLICATE_API_TOKEN' in os.environ
+
+def is_replicate_cli_installed():
+    try:
+        output = subprocess.check_output(["replicate", "--version"])
+        return True
+    except subprocess.CalledProcessError:
+        return False
+    except FileNotFoundError:
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
     parser.add_argument('output_directory', help='Directory where the frames will be saved', default='./extracted_frames', nargs='?')
     args = parser.parse_args()
+
+
+    if not is_replicate_cli_installed():
+        input("🚫 Replicate CLI is not installed. Please install it before proceeding. Link: https://github.com/replicate/cli. Press any key to open the webpage.")
+        webbrowser.open(f"https://github.com/replicate/cli")
+    else:
+        print("✅ Replicate CLI is installed. Proceeding...")
+
+    if not is_replicate_api_token_set():
+        print("🚫 REPLICATE_API_TOKEN is not set. Please set it with `export REPLICATE_API_TOKEN=<your-token>`, then try again.")
+    else:
+        print("✅ REPLICATE_API_TOKEN is set. Proceeding...")
 
     video_url = args.url
     output_directory = args.output_directory
