@@ -198,6 +198,7 @@ def main():
 
     if not is_replicate_api_token_set():
         print("🚫 REPLICATE_API_TOKEN is not set. Please set it with `export REPLICATE_API_TOKEN=<your-token>`, then try again.")
+        return
     else:
         print("✅ REPLICATE_API_TOKEN is set. Proceeding...")
 
