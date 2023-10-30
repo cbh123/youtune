@@ -186,7 +186,7 @@ def is_replicate_cli_installed():
 def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
-    parser.add_argument('output_directory', help='Directory where the frames will be saved', default='./extracted_frames', nargs='?')
+    parser.add_argument('output_directory', help='Directory where the frames will be saved')
     args = parser.parse_args()
 
 
@@ -203,7 +203,7 @@ def main():
         print("✅ REPLICATE_API_TOKEN is set. Proceeding...")
 
     video_url = args.url
-    output_directory = args.output_directory
+    output_directory = f'./extracted_frames/{args.output_directory}'
 
     # Directory where you want to save the downloaded video
     download_directory = './downloaded_videos'  # replace with your desired directory if you want
