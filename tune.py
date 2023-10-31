@@ -10,6 +10,7 @@ import subprocess
 import zipfile
 import webbrowser
 import os
+import re
 
 
 def download_youtube_video(url, save_path=''):
@@ -183,10 +184,19 @@ def is_replicate_cli_installed():
         return False
 
 
+def slugify(title):
+    """
+    Slugify a YouTube title.
+
+    :param title: The title to slugify.
+    :return: The slugified title.
+    """
+    return re.sub(r'\W+', '-', title).lower()
+
+
 def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
-    parser.add_argument('output_directory', help='Directory where the frames will be saved')
     args = parser.parse_args()
 
 
@@ -203,12 +213,18 @@ def main():
         print("✅ REPLICATE_API_TOKEN is set. Proceeding...")
 
     video_url = args.url
-    output_directory = f'./extracted_frames/{args.output_directory}'
 
     # Directory where you want to save the downloaded video
     download_directory = './downloaded_videos'  # replace with your desired directory if you want
 
     video_file_path = download_youtube_video(video_url, save_path=download_directory)
+
+    output_directory = './extracted_frames'
+
+    # slugify the video title
+    video_name = video_file_path.split('/')[-1]
+    output_directory = f"./extracted_frames/{slugify(video_name)}"
+
     extract_frames(video_file_path, frame_interval=50, save_path=output_directory)
 
        # After extracting and saving images, ask the user to confirm
