@@ -148,7 +148,7 @@ def zip_directory(folder_path, zip_path):
 
     return zip_path
 
-def create_training(model, save_dir):
+def create_training(model, save_dir, caption_prefix="photo of TOK"):
     try:
         # Please make sure that 'replicate' is installed and available in your system's PATH.
         # The command assumes that "nightmare.zip" is correctly placed and accessible.
@@ -159,7 +159,8 @@ def create_training(model, save_dir):
             "--destination",
             model,
             "--web",
-            f"input_images=@{save_dir}"
+            f"input_images=@{save_dir}",
+            f"caption_prefix={caption_prefix}",
         ]
         subprocess.run(command, check=True)
     except subprocess.CalledProcessError as e:
@@ -187,6 +188,8 @@ def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
     parser.add_argument('output_directory', help='Directory where the frames will be saved', default='./extracted_frames', nargs='?')
+    parser.add_argument('--interval', help='Interval between frames', default=50, type=int)
+    parser.add_argument('--caption_prefix', help='automatically add this to the start of each caption', default="photo of TOK", type=str)
     args = parser.parse_args()
 
 
@@ -204,12 +207,17 @@ def main():
 
     video_url = args.url
     output_directory = args.output_directory
+    interval = args.interval
+    caption_prefix = args.caption_prefix
 
     # Directory where you want to save the downloaded video
     download_directory = './downloaded_videos'  # replace with your desired directory if you want
 
-    video_file_path = download_youtube_video(video_url, save_path=download_directory)
-    extract_frames(video_file_path, frame_interval=50, save_path=output_directory)
+    if video_url.startswith("http"):
+        video_file_path = download_youtube_video(video_url, save_path=download_directory)
+    else:
+        video_file_path = video_url
+    extract_frames(video_file_path, frame_interval=interval, save_path=output_directory)
 
        # After extracting and saving images, ask the user to confirm
     if user_confirmation(output_directory):
@@ -219,7 +227,7 @@ def main():
         # Compress the directory with the images
         zip_path = zip_directory(output_directory, output_directory + ".zip")
 
-        create_training(model, zip_path)
+        create_training(model, zip_path, caption_prefix=caption_prefix)
     else:
         print("Operation cancelled by the user.")
 
