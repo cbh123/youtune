@@ -220,20 +220,17 @@ def main():
     caption_prefix = args.caption_prefix
 
     # Directory where you want to save the downloaded video
-    download_directory = './downloaded_videos'  # replace with your desired directory if you want
-
-    video_file_path = download_youtube_video(video_url, save_path=download_directory)
-
+    download_directory = './downloaded_videos'
     output_directory = './extracted_frames'
-
-    # slugify the video title
-    video_name = video_file_path.split('/')[-1]
-    output_directory = f"./extracted_frames/{slugify(video_name)}"
 
     if video_url.startswith("http"):
         video_file_path = download_youtube_video(video_url, save_path=download_directory)
     else:
         video_file_path = video_url
+
+    # slugify the video title
+    video_name = video_file_path.split('/')[-1]
+    output_directory = f"./extracted_frames/{slugify(video_name)}"
 
     extract_frames(video_file_path, frame_interval=interval, save_path=output_directory)
 
