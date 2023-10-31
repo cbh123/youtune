@@ -202,7 +202,6 @@ def main():
     parser.add_argument('--caption_prefix', help='automatically add this to the start of each caption', default="photo of TOK", type=str)
     args = parser.parse_args()
 
-
     if not is_replicate_cli_installed():
         input("🚫 Replicate CLI is not installed. Please install it before proceeding. Link: https://github.com/replicate/cli. Press any key to open the webpage.")
         webbrowser.open(f"https://github.com/replicate/cli")
