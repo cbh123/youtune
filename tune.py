@@ -233,7 +233,7 @@ def main():
 
     extract_frames(video_file_path, frame_interval=interval, save_path=output_directory)
 
-       # After extracting and saving images, ask the user to confirm
+    # After extracting and saving images, ask the user to confirm
     if user_confirmation(output_directory):
         # If the user confirms, proceed with the posting function
         model = user_model()
