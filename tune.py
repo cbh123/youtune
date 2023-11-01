@@ -149,7 +149,7 @@ def zip_directory(folder_path, zip_path):
 
     return zip_path
 
-def create_training(model, save_dir, caption_prefix="photo of TOK"):
+def create_training(model, save_dir, caption_prefix="in the style of TOK"):
     try:
         # Please make sure that 'replicate' is installed and available in your system's PATH.
         # The command assumes that "nightmare.zip" is correctly placed and accessible.
