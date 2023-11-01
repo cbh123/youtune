@@ -199,7 +199,7 @@ def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
     parser.add_argument('--interval', help='Interval between frames', default=50, type=int)
-    parser.add_argument('--caption_prefix', help='automatically add this to the start of each caption', default="photo of TOK", type=str)
+    parser.add_argument('--caption_prefix', help='automatically add this to the start of each caption', default="in the style of TOK", type=str)
     args = parser.parse_args()
 
     if not is_replicate_cli_installed():
