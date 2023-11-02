@@ -11,6 +11,7 @@ import zipfile
 import webbrowser
 import os
 import re
+from numpy.fft import fftshift, fft2
 
 
 def download_youtube_video(url, save_path=''):
@@ -39,7 +40,7 @@ def is_mostly_black_or_white(image, threshold, white_threshold=225):
 
     return average_brightness < threshold or average_brightness > white_threshold
 
-def extract_frames(video_path, frame_interval=50, save_path='', black_white_threshold=10, hash_func=imagehash.average_hash, hash_size=8, hash_diff_threshold=10):
+def extract_frames(video_path, frame_interval=50, save_path='', black_white_threshold=10, hash_func=imagehash.average_hash, hash_size=8, hash_diff_threshold=10, remove_blur=True, motion_blur_threshold=-0.02):
     if save_path and not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -66,6 +67,8 @@ def extract_frames(video_path, frame_interval=50, save_path='', black_white_thre
                 is_black_or_white = is_mostly_black_or_white(frame, threshold=black_white_threshold)
                 current_hash = hash_func(pil_image, hash_size=hash_size)
 
+                is_blurry, blur_score = detect_motion_blur(frame, motion_blur_threshold)
+
                 should_save = True  # Initialize the flag assuming the frame will be saved
 
                 if previous_hash is not None:
@@ -77,6 +80,10 @@ def extract_frames(video_path, frame_interval=50, save_path='', black_white_thre
                 if is_black_or_white:
                     should_save = False  # If frame is mostly black or white, do not save
                     print(f"Skipping frame {frame_index} because it's mostly black or white")
+
+                if remove_blur and is_blurry:
+                    should_save = False
+                    print(f"Skipping frame {frame_index} because it's blurry (blur score: {blur_score}))")
 
                 if should_save:
                     save_filename = os.path.join(save_path, f'frame_{frame_index}.jpg')
@@ -195,11 +202,34 @@ def slugify(title):
     return re.sub(r'\W+', '-', title).lower()
 
 
+def detect_motion_blur(image, motion_blur_threshold):
+   # Load the image
+   image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Scale the image to the range [0, 1]
+   image = image / 255.0
+
+   # Apply DCT
+   dct = cv2.dct(np.float32(image))
+
+   # Compute the average of the DCT coefficients in the high-frequency region
+   avg = np.mean(dct[1:int(dct.shape[0]/2), 1:int(dct.shape[1]/2)])
+
+   avg = avg * 10000 if avg else 0
+
+   # If the average is below a certain threshold, the image is likely blurred
+   # After some trial and error, around -0.02 seems to be a good threshold
+   if avg < motion_blur_threshold:
+       return (True, avg)
+   else:
+       return (False, avg)
+
 def main():
     parser = argparse.ArgumentParser(description='Download a video from YouTube and extract frames.')
     parser.add_argument('url', help='URL of the YouTube video')
     parser.add_argument('--interval', help='Interval between frames', default=50, type=int)
     parser.add_argument('--caption_prefix', help='automatically add this to the start of each caption', default="in the style of TOK", type=str)
+    parser.add_argument('--remove_blur', help='remove blurry frames', default=False, action='store_true')
     args = parser.parse_args()
 
     if not is_replicate_cli_installed():
