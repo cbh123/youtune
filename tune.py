@@ -195,7 +195,7 @@ def create_sdxl_training(model, save_dir, caption_prefix="in the style of TOK"):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-def create_musicgen_training(model, save_dir, audio_description):
+def create_musicgen_training(model, save_dir, audio_description, drop_vocals=False):
     try:
         # Please make sure that 'replicate' is installed and available in your system's PATH.
         # The command assumes that "your-audio.mp3" is correctly placed and accessible.
@@ -207,6 +207,7 @@ def create_musicgen_training(model, save_dir, audio_description):
             model,
             "--web",
             "model=medium",
+            f"drop_vocals={drop_vocals}",
             f"one_same_description={audio_description}",
             f"dataset_path=@{save_dir}",
         ]
@@ -280,10 +281,15 @@ def process_audio(audio_file_path):
         # If the user confirms, proceed with the posting function
         model = user_model()
 
-        # get audio description from user
-        audio_description = input("Please input the audio description: ")
+        print("Please describe the audio, use 2 to 3 comma separated keywords. This could be a band name, genre or something unique. You’ll use this when prompting your fine-tune.")
+        audio_description = input("Describe the audio: ")
 
-        create_musicgen_training(model, audio_file_path, audio_description)
+        # ask user if they want to drop vocals
+        print("MusicGen does not train well with audio that has vocals")
+        drop_vocals_input = input("Do you want to automatically drop vocals from your audio? (y/n): ")
+        drop_vocals = True if drop_vocals_input.lower() == 'y' else False
+
+        create_musicgen_training(model, audio_file_path, audio_description, drop_vocals)
     else:
         print("Operation cancelled by the user.")
 
