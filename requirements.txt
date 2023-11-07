@@ -6,6 +6,7 @@ httpcore==0.18.0
 httpx==0.25.0
 idna==3.4
 ImageHash==4.3.1
+moviepy==1.0.3
 numpy==1.26.1
 opencv-python==4.8.1.78
 packaging==23.2
